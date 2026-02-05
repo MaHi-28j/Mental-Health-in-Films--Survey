@@ -1368,7 +1368,7 @@
                             <ul>
                                 <li>Please read the scenario carefully and answer based <strong>only</strong> on what is shown in the scenario.</li>
                                 <li>If you are unsure, select <em>"I don't know / I'm not sure"</em> where available.</li>
-                                <li>There are no right or wrong answers — we are interested in your perception.</li>
+                                <li>There are no right or wrong answers. We are interested in your perception.</li>
                             </ul>
                         </div>
 
@@ -1531,20 +1531,20 @@
             
             // Collect general questionnaire responses
             responses['general'] = {};
-            for (let i = 1; i <= 6; i++) {
-                const questionName = `gen_q${i}`;
-                if (i === 1 || i === 2) {
-                    // Checkbox questions (Q1 and Q2)
-                    const checked = Array.from(document.querySelectorAll(`input[name="${questionName}"]:checked`))
-                        .map(cb => cb.value);
-                    responses['general'][questionName] = checked.join('; ');
-                } else {
-                    // Radio or scale questions
-                    const selected = document.querySelector(`input[name="${questionName}"]:checked`);
-                    responses['general'][questionName] = selected ? selected.value : '';
-                }
+
+            // Q1 & Q2 are checkbox (may be empty)
+            const gen_q1_checked = Array.from(document.querySelectorAll(`input[name="gen_q1"]:checked`)).map(cb => cb.value);
+            const gen_q2_checked = Array.from(document.querySelectorAll(`input[name="gen_q2"]:checked`)).map(cb => cb.value);
+
+            responses['general']['q1'] = gen_q1_checked.join('; ');
+            responses['general']['q2'] = gen_q2_checked.join('; ');
+
+            // Q3-Q6 are required radio/scale
+            for (let i = 3; i <= 6; i++) {
+                const selected = document.querySelector(`input[name="gen_q${i}"]:checked`);
+                responses['general'][`q${i}`] = selected ? selected.value : '';
             }
-            
+
             return responses;
         }
         
@@ -1579,16 +1579,10 @@
             
             for (let key in responses) {
                 if (key === 'general') {
-                    const g = responses['general'];
                     const data = {
                         disorder: 'general',
                         selectedMovies: selectedMovies.join(', '),
-                        q1: g.gen_q1 || '',
-                        q2: g.gen_q2 || '',
-                        q3: g.gen_q3 || '',
-                        q4: g.gen_q4 || '',
-                        q5: g.gen_q5 || '',
-                        q6: g.gen_q6 || ''
+                        ...responses['general']
                     };
                     
                     submissionPromises.push(
