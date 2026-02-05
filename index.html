@@ -371,73 +371,6 @@
             0% { transform: rotate(0deg); }
             100% { transform: rotate(360deg); }
         }
-    
-        /* Mobile responsiveness */
-        @media (max-width: 600px) {
-            body { padding: 12px; }
-
-            .container {
-                padding: 18px;
-                border-radius: 14px;
-            }
-
-            h1 { font-size: 1.55em; }
-
-            .intro {
-                margin-bottom: 18px;
-                font-size: 0.98em;
-            }
-
-            .movie-grid {
-                grid-template-columns: repeat(2, minmax(0, 1fr));
-                gap: 12px;
-                margin: 18px 0;
-            }
-
-            .movie-poster { height: 200px; }
-
-            .movie-title {
-                padding: 10px;
-                font-size: 0.9em;
-            }
-
-            .question-block {
-                margin: 18px 0;
-                padding: 16px;
-            }
-
-            .question-block h3 {
-                font-size: 1.0em;
-                line-height: 1.35;
-            }
-
-            .instructions-box { padding: 14px 14px 8px 14px; }
-
-            .scenario-box { padding: 16px; }
-
-            .scale-container {
-                flex-wrap: wrap;
-                gap: 8px;
-            }
-
-            .scale-option { flex: 0 0 calc(25% - 8px); }
-
-            .scale-option label { padding: 12px 0; }
-
-            .btn-group {
-                flex-direction: column;
-                gap: 10px;
-            }
-
-            .btn { padding: 14px 18px; }
-        }
-
-        @media (max-width: 380px) {
-            .movie-grid { grid-template-columns: 1fr; }
-            .movie-poster { height: 230px; }
-            .scale-option { flex: 0 0 calc(33.333% - 8px); }
-        }
-
     </style>
 </head>
 <body>
@@ -789,15 +722,9 @@
 
     <script>
         // Configuration
-        const APPS_SCRIPT_URL = 'https://script.google.com/macros/s/AKfycbx4RTOxriz0hsWjUIv8662La6M6OcaCTB77ghDXvU5wN1lRJhKqA5l2F79zpwQ1BQdQ/exec';
+        const APPS_SCRIPT_URL = 'https://script.google.com/macros/s/AKfycbxjX0VT3qLrAFm0pNhAMKhVEbHcB7E4oEdvQBJ1N9uF81xtTOqMBXUmFe9u-j0HzZPc/exec';
         
-        
-        function scrollToTop() {
-            // Ensure new page/questionnaire starts at the top (especially on mobile)
-            window.scrollTo({ top: 0, left: 0, behavior: 'auto' });
-        }
-
-let selectedMovies = [];
+        let selectedMovies = [];
         let selectedDisorders = [];
         let currentQuestionnaireIndex = 0;
         
@@ -1413,11 +1340,9 @@ let selectedMovies = [];
                 generateQuestionnairePages();
                 currentQuestionnaireIndex = 0;
                 showQuestionnairePage(0);
-                scrollToTop();
                 updateProgress(25);
             } else {
                 showPage('generalQuestionnairePage');
-                scrollToTop();
                 updateProgress(75);
             }
         }
@@ -1443,7 +1368,7 @@ let selectedMovies = [];
                             <ul>
                                 <li>Please read the scenario carefully and answer based <strong>only</strong> on what is shown in the scenario.</li>
                                 <li>If you are unsure, select <em>"I don't know / I'm not sure"</em> where available.</li>
-                                <li>There are no right or wrong answers. We are interested in your perception.</li>
+                                <li>There are no right or wrong answers — we are interested in your perception.</li>
                             </ul>
                         </div>
 
@@ -1521,9 +1446,7 @@ let selectedMovies = [];
             
             const pageId = `questionnaire_${index}`;
             document.getElementById(pageId).classList.add('active');
-            scrollToTop();
             currentQuestionnaireIndex = index;
-            scrollToTop();
         }
         
         function validateAndProceed(index) {
@@ -1556,7 +1479,6 @@ let selectedMovies = [];
                 updateProgress(25 + (50 * (index + 1) / selectedDisorders.length));
             } else {
                 showPage('generalQuestionnairePage');
-                scrollToTop();
                 updateProgress(75);
             }
         }
@@ -1570,7 +1492,6 @@ let selectedMovies = [];
         
         function goBackToMovieSelection() {
             showPage('page1');
-            scrollToTop();
             updateProgress(0);
         }
         
@@ -1580,7 +1501,6 @@ let selectedMovies = [];
                 updateProgress(25 + (50 * selectedDisorders.length / selectedDisorders.length));
             } else {
                 showPage('page1');
-            scrollToTop();
                 updateProgress(0);
             }
         }
@@ -1659,10 +1579,16 @@ let selectedMovies = [];
             
             for (let key in responses) {
                 if (key === 'general') {
+                    const g = responses['general'];
                     const data = {
                         disorder: 'general',
                         selectedMovies: selectedMovies.join(', '),
-                        ...responses['general']
+                        q1: g.gen_q1 || '',
+                        q2: g.gen_q2 || '',
+                        q3: g.gen_q3 || '',
+                        q4: g.gen_q4 || '',
+                        q5: g.gen_q5 || '',
+                        q6: g.gen_q6 || ''
                     };
                     
                     submissionPromises.push(
@@ -1682,6 +1608,7 @@ let selectedMovies = [];
                         disorder: originalDisorder,
                         selectedMovies: selectedMovies.join(', '),
                         scenario: questionnaires[originalDisorder].scenario,
+                        q6: '',
                         ...responses[key]
                     };
                     
@@ -1719,7 +1646,6 @@ let selectedMovies = [];
                 page.classList.remove('active');
             });
             document.getElementById(pageId).classList.add('active');
-            scrollToTop();
         }
         
         function updateProgress(percent) {
