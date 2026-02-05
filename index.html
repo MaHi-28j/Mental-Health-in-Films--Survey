@@ -1,0 +1,1651 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Mental Health in Cinema Survey</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+        
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            min-height: 100vh;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            padding: 20px;
+        }
+        
+        .container {
+            background: white;
+            border-radius: 20px;
+            box-shadow: 0 20px 60px rgba(0,0,0,0.3);
+            max-width: 800px;
+            width: 100%;
+            padding: 40px;
+            animation: fadeIn 0.5s ease-in;
+        }
+        
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translateY(20px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+        
+        h1 {
+            color: #333;
+            margin-bottom: 10px;
+            font-size: 2em;
+        }
+        
+        .intro {
+            color: #666;
+            margin-bottom: 30px;
+            line-height: 1.6;
+        }
+        
+        .page {
+            display: none;
+        }
+        
+        .page.active {
+            display: block;
+            animation: fadeIn 0.5s ease-in;
+        }
+        
+        .movie-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(200px, 1fr));
+            gap: 20px;
+            margin: 30px 0;
+        }
+        
+        .movie-item {
+            position: relative;
+        }
+        
+        .movie-item input[type="checkbox"] {
+            display: none;
+        }
+        
+        .movie-label {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            padding: 0;
+            background: #f8f9fa;
+            border: 3px solid #e9ecef;
+            border-radius: 12px;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            overflow: hidden;
+            height: 100%;
+        }
+        
+        .movie-poster {
+            width: 100%;
+            height: 280px;
+            object-fit: cover;
+            background: #e9ecef;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: #6c757d;
+            font-size: 0.9em;
+        }
+        
+        .movie-poster img {
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+        }
+        
+        .movie-title {
+            padding: 15px;
+            text-align: center;
+            font-weight: 600;
+            color: #495057;
+            font-size: 0.95em;
+            line-height: 1.3;
+            width: 100%;
+        }
+        
+        .movie-label:hover {
+            border-color: #667eea;
+            transform: translateY(-5px);
+            box-shadow: 0 10px 25px rgba(102, 126, 234, 0.2);
+        }
+        
+        .movie-item input[type="checkbox"]:checked + .movie-label {
+            border-color: #667eea;
+            box-shadow: 0 0 0 3px rgba(102, 126, 234, 0.3);
+        }
+        
+        .movie-item input[type="checkbox"]:checked + .movie-label .movie-title {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+        }
+        
+        .error {
+            color: #dc3545;
+            margin: 15px 0;
+            padding: 10px;
+            background: #f8d7da;
+            border-radius: 5px;
+            display: none;
+        }
+        
+        .error.show {
+            display: block;
+        }
+        
+        .question-block {
+            margin: 30px 0;
+            padding: 25px;
+            background: #f8f9fa;
+            border-radius: 10px;
+        }
+        
+        .question-block h3 {
+            color: #333;
+            margin-bottom: 15px;
+            font-size: 1.1em;
+            position: relative;
+        }
+        
+        .required-indicator {
+            color: #dc3545;
+            margin-left: 5px;
+            font-size: 1.2em;
+        }
+        
+        .required-label {
+            color: #6c757d;
+            font-size: 0.9em;
+            margin-bottom: 20px;
+            font-style: italic;
+        }
+        
+        .instructions-box {
+            background: #f1f3ff;
+            border: 1px solid rgba(102, 126, 234, 0.35);
+            border-radius: 10px;
+            padding: 18px 18px 10px 18px;
+            margin: 15px 0 20px 0;
+            color: #495057;
+            line-height: 1.5;
+        }
+
+        .instructions-box ul {
+            margin: 10px 0 0 18px;
+        }
+
+        .instructions-box li {
+            margin: 6px 0;
+        }
+
+        .scenario-box {
+            background: linear-gradient(135deg, rgba(102, 126, 234, 0.10) 0%, rgba(118, 75, 162, 0.08) 100%);
+            padding: 22px;
+            border: 2px solid rgba(102, 126, 234, 0.35);
+            border-radius: 12px;
+            margin: 20px 0;
+            color: #333;
+            line-height: 1.7;
+            box-shadow: 0 8px 20px rgba(102, 126, 234, 0.12);
+        }
+
+        .scenario-title {
+            font-weight: 800;
+            letter-spacing: 0.2px;
+            margin-bottom: 10px;
+            color: #3f4cc1;
+        }
+
+        .scenario-text {
+            font-size: 1.02em;
+        }
+        
+        .scale-container {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin: 20px 0;
+            gap: 10px;
+        }
+        
+        .scale-option {
+            flex: 1;
+            text-align: center;
+        }
+        
+        .scale-option input[type="radio"] {
+            display: none;
+        }
+        
+        .scale-option label {
+            display: block;
+            padding: 15px 10px;
+            background: white;
+            border: 2px solid #dee2e6;
+            border-radius: 8px;
+            cursor: pointer;
+            transition: all 0.2s ease;
+            font-weight: 600;
+            color: #495057;
+        }
+        
+        .scale-option input[type="radio"]:checked + label {
+            background: #667eea;
+            color: white;
+            border-color: #667eea;
+            transform: scale(1.05);
+        }
+        
+        .scale-labels {
+            display: flex;
+            justify-content: space-between;
+            margin-top: 10px;
+            font-size: 0.85em;
+            color: #6c757d;
+        }
+        
+        .checkbox-group {
+            margin: 15px 0;
+        }
+        
+        .checkbox-item {
+            margin: 10px 0;
+        }
+        
+        .checkbox-item input[type="checkbox"] {
+            margin-right: 10px;
+            width: 18px;
+            height: 18px;
+            cursor: pointer;
+        }
+        
+        .checkbox-item label {
+            cursor: pointer;
+            color: #495057;
+        }
+        
+        .radio-group {
+            margin: 15px 0;
+        }
+        
+        .radio-item {
+            margin: 10px 0;
+        }
+        
+        .radio-item input[type="radio"] {
+            margin-right: 10px;
+            width: 18px;
+            height: 18px;
+            cursor: pointer;
+        }
+        
+        .radio-item label {
+            cursor: pointer;
+            color: #495057;
+        }
+        
+        .btn-group {
+            display: flex;
+            gap: 15px;
+            margin-top: 30px;
+        }
+        
+        .btn {
+            flex: 1;
+            padding: 15px 30px;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            border: none;
+            border-radius: 8px;
+            font-size: 1em;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.3s ease;
+        }
+        
+        .btn:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 5px 15px rgba(102, 126, 234, 0.4);
+        }
+        
+        .btn-secondary {
+            background: #6c757d;
+        }
+        
+        .progress-bar {
+            width: 100%;
+            height: 8px;
+            background: #e9ecef;
+            border-radius: 10px;
+            margin-bottom: 30px;
+            overflow: hidden;
+        }
+        
+        .progress-fill {
+            height: 100%;
+            background: linear-gradient(90deg, #667eea 0%, #764ba2 100%);
+            transition: width 0.3s ease;
+            width: 0%;
+        }
+        
+        .questionnaire-page {
+            display: none;
+        }
+        
+        .questionnaire-page.active {
+            display: block;
+            animation: fadeIn 0.5s ease-in;
+        }
+        
+        .loading-spinner {
+            display: none;
+            text-align: center;
+            padding: 40px;
+        }
+        
+        .loading-spinner.show {
+            display: block;
+        }
+        
+        .spinner {
+            border: 4px solid #f3f3f3;
+            border-top: 4px solid #667eea;
+            border-radius: 50%;
+            width: 50px;
+            height: 50px;
+            animation: spin 1s linear infinite;
+            margin: 0 auto 20px;
+        }
+        
+        @keyframes spin {
+            0% { transform: rotate(0deg); }
+            100% { transform: rotate(360deg); }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="progress-bar">
+            <div class="progress-fill" id="progressBar"></div>
+        </div>
+        
+        <!-- Page 1: Movie Selection -->
+        <div id="page1" class="page active">
+            <h1>🎬 Mental Health in Cinema Survey</h1>
+            <p class="intro">
+                Welcome! This survey explores how mental health conditions are portrayed in films. 
+                Select the movies you've watched from the list below. You'll then answer questions 
+                about specific scenarios from those films.
+            </p>
+            
+            <h2 style="color: #667eea; margin: 30px 0 20px 0;">Select the movies you've watched:</h2>
+            
+            <div class="movie-grid">
+                <div class="movie-item">
+                    <input type="checkbox" id="annie_hall" value="Annie Hall (1977)">
+                    <label for="annie_hall" class="movie-label">
+                        <div class="movie-poster">
+                            <img src="images/annie_hall.jpg" alt="Annie Hall">
+                        </div>
+                        <div class="movie-title">Annie Hall (1977)</div>
+                    </label>
+                </div>
+                <div class="movie-item">
+                    <input type="checkbox" id="as_good" value="As Good as It Gets (1997)">
+                    <label for="as_good" class="movie-label">
+                        <div class="movie-poster">
+                            <img src="images/as_good_as_it_gets.jpg" alt="As Good as It Gets">
+                        </div>
+                        <div class="movie-title">As Good as It Gets (1997)</div>
+                    </label>
+                </div>
+                <div class="movie-item">
+                    <input type="checkbox" id="black_swan" value="Black Swan (2010)">
+                    <label for="black_swan" class="movie-label">
+                        <div class="movie-poster">
+                            <img src="images/black_swan.jpg" alt="Black Swan">
+                        </div>
+                        <div class="movie-title">Black Swan (2010)</div>
+                    </label>
+                </div>
+                <div class="movie-item">
+                    <input type="checkbox" id="donnie_darko" value="Donnie Darko (2001)">
+                    <label for="donnie_darko" class="movie-label">
+                        <div class="movie-poster">
+                            <img src="images/donnie_darko.jpeg" alt="Donnie Darko">
+                        </div>
+                        <div class="movie-title">Donnie Darko (2001)</div>
+                    </label>
+                </div>
+                <div class="movie-item">
+                    <input type="checkbox" id="eighth_grade" value="Eighth Grade (2018)">
+                    <label for="eighth_grade" class="movie-label">
+                        <div class="movie-poster">
+                            <img src="images/eighth_grade.jpg" alt="Eighth Grade">
+                        </div>
+                        <div class="movie-title">Eighth Grade (2018)</div>
+                    </label>
+                </div>
+                <div class="movie-item">
+                    <input type="checkbox" id="identity" value="Identity (2003)">
+                    <label for="identity" class="movie-label">
+                        <div class="movie-poster">
+                            <img src="images/identity.jpg" alt="Identity">
+                        </div>
+                        <div class="movie-title">Identity (2003)</div>
+                    </label>
+                </div>
+                <div class="movie-item">
+                    <input type="checkbox" id="matchstick" value="Matchstick Men (2003)">
+                    <label for="matchstick" class="movie-label">
+                        <div class="movie-poster">
+                            <img src="images/matchstick_men.jpg" alt="Matchstick Men">
+                        </div>
+                        <div class="movie-title">Matchstick Men (2003)</div>
+                    </label>
+                </div>
+                <div class="movie-item">
+                    <input type="checkbox" id="psycho" value="Psycho (1960)">
+                    <label for="psycho" class="movie-label">
+                        <div class="movie-poster">
+                            <img src="images/psycho.jpg" alt="Psycho">
+                        </div>
+                        <div class="movie-title">Psycho (1960)</div>
+                    </label>
+                </div>
+                <div class="movie-item">
+                    <input type="checkbox" id="punch_drunk" value="Punch-Drunk Love (2002)">
+                    <label for="punch_drunk" class="movie-label">
+                        <div class="movie-poster">
+                            <img src="images/punch_drunk_love.jpg" alt="Punch-Drunk Love">
+                        </div>
+                        <div class="movie-title">Punch-Drunk Love (2002)</div>
+                    </label>
+                </div>
+                <div class="movie-item">
+                    <input type="checkbox" id="fisher_king" value="The Fisher King (1991)">
+                    <label for="fisher_king" class="movie-label">
+                        <div class="movie-poster">
+                            <img src="images/the_fisher_king.jpg" alt="The Fisher King">
+                        </div>
+                        <div class="movie-title">The Fisher King (1991)</div>
+                    </label>
+                </div>
+                <div class="movie-item">
+                    <input type="checkbox" id="what_about_bob" value="What About Bob? (1991)">
+                    <label for="what_about_bob" class="movie-label">
+                        <div class="movie-poster">
+                            <img src="images/what_about_bob.jpg" alt="What About Bob?">
+                        </div>
+                        <div class="movie-title">What About Bob? (1991)</div>
+                    </label>
+                </div>
+                <div class="movie-item">
+                    <input type="checkbox" id="none_of_these" value="None of these">
+                    <label for="none_of_these" class="movie-label">
+                        <div class="movie-poster" style="background: linear-gradient(135deg, #667eea 0%, #764ba2 100%); color: white; font-size: 1.2em; font-weight: 600;">
+                            None of these
+                        </div>
+                        <div class="movie-title">None of these</div>
+                    </label>
+                </div>
+            </div>
+            
+            <div id="movieError" class="error"></div>
+            
+            <div class="btn-group">
+                <button class="btn" onclick="proceedToQuestionnaires()">Next</button>
+            </div>
+        </div>
+        
+        <!-- Dynamic Questionnaire Pages (will be generated) -->
+        <div id="dynamicQuestionnaires"></div>
+        
+        <!-- General Questionnaire Page -->
+        <div id="generalQuestionnairePage" class="questionnaire-page">
+            <h2 style="color: #667eea; margin-bottom: 20px;">General Questionnaire</h2>
+            <p class="intro" style="margin-bottom: 30px;">
+                Even if you haven't seen the movies listed, you've likely seen films or shows that mention mental health. The questions below are about those general impressions.
+            </p>
+            <div class="instructions-box" style="margin-bottom: 25px;">
+                <strong>Instructions</strong>
+                <ul>
+                    <li>Answer based on your general experience with films/shows.</li>
+                    <li>If a question does not apply to you, choose <em>Not sure</em> where available.</li>
+                    <li><span style="color: #dc3545;">*</span> indicates required question.</li>
+                </ul>
+            </div>
+            <p class="required-label"><span style="color: #dc3545;">*</span> indicates required question</p>
+            
+            <div class="question-block">
+                <h3>Q1. When a movie explicitly names a mental health condition (e.g., "I have anxiety," "I have OCD"), what do you usually rely on more to understand it?</h3>
+                <p style="color: #6c757d; margin-bottom: 15px;">(You may select more than one)</p>
+                <div class="checkbox-group">
+                    <div class="checkbox-item">
+                        <input type="checkbox" id="gen_q1_1" name="gen_q1" value="The character's behavior and actions">
+                        <label for="gen_q1_1">The character's behavior and actions</label>
+                    </div>
+                    <div class="checkbox-item">
+                        <input type="checkbox" id="gen_q1_2" name="gen_q1" value="What the character says about their thoughts or feelings">
+                        <label for="gen_q1_2">What the character says about their thoughts or feelings</label>
+                    </div>
+                    <div class="checkbox-item">
+                        <input type="checkbox" id="gen_q1_3" name="gen_q1" value="A few standout scenes (panic, breakdown, rituals, etc.)">
+                        <label for="gen_q1_3">A few standout scenes (panic, breakdown, rituals, etc.)</label>
+                    </div>
+                    <div class="checkbox-item">
+                        <input type="checkbox" id="gen_q1_4" name="gen_q1" value="The label itself ('anxiety,' 'depression,' etc.)">
+                        <label for="gen_q1_4">The label itself ("anxiety," "depression," etc.)</label>
+                    </div>
+                    <div class="checkbox-item">
+                        <input type="checkbox" id="gen_q1_5" name="gen_q1" value="I don't usually think about it consciously">
+                        <label for="gen_q1_5">I don't usually think about it consciously</label>
+                    </div>
+                    <div class="checkbox-item">
+                        <input type="checkbox" id="gen_q1_6" name="gen_q1" value="Not sure">
+                        <label for="gen_q1_6">Not sure</label>
+                    </div>
+                </div>
+            </div>
+
+            <div class="question-block">
+                <h3>Q2. In films or shows you've seen, which parts of mental health conditions are shown most often?</h3>
+                <p style="color: #6c757d; margin-bottom: 15px;">(You may select more than one)</p>
+                <div class="checkbox-group">
+                    <div class="checkbox-item">
+                        <input type="checkbox" id="gen_q2_1" name="gen_q2" value="Visible or physical symptoms">
+                        <label for="gen_q2_1">Visible or physical symptoms</label>
+                    </div>
+                    <div class="checkbox-item">
+                        <input type="checkbox" id="gen_q2_2" name="gen_q2" value="Extreme moments (panic attacks, breakdowns, violence)">
+                        <label for="gen_q2_2">Extreme moments (panic attacks, breakdowns, violence)</label>
+                    </div>
+                    <div class="checkbox-item">
+                        <input type="checkbox" id="gen_q2_3" name="gen_q2" value="Social or relationship problems">
+                        <label for="gen_q2_3">Social or relationship problems</label>
+                    </div>
+                    <div class="checkbox-item">
+                        <input type="checkbox" id="gen_q2_4" name="gen_q2" value="Everyday thoughts or internal struggles">
+                        <label for="gen_q2_4">Everyday thoughts or internal struggles</label>
+                    </div>
+                    <div class="checkbox-item">
+                        <input type="checkbox" id="gen_q2_5" name="gen_q2" value="Treatment or coping over time">
+                        <label for="gen_q2_5">Treatment or coping over time</label>
+                    </div>
+                    <div class="checkbox-item">
+                        <input type="checkbox" id="gen_q2_6" name="gen_q2" value="Not sure">
+                        <label for="gen_q2_6">Not sure</label>
+                    </div>
+                </div>
+            </div>
+
+            <div class="question-block">
+                <h3>Q3. How much does the condition label (like "anxiety," "OCD," "PTSD") shape your understanding of a character, compared to what you actually see them do or feel?<span class="required-indicator">*</span></h3>
+                <div class="radio-group">
+                    <div class="radio-item">
+                        <input type="radio" id="gen_q3_1" name="gen_q3" value="The label alone is enough to understand the character">
+                        <label for="gen_q3_1">The label alone is enough to understand the character</label>
+                    </div>
+                    <div class="radio-item">
+                        <input type="radio" id="gen_q3_2" name="gen_q3" value="The label helps, but I rely more on what I see">
+                        <label for="gen_q3_2">The label helps, but I rely more on what I see</label>
+                    </div>
+                    <div class="radio-item">
+                        <input type="radio" id="gen_q3_3" name="gen_q3" value="I mostly ignore the label and focus on behavior">
+                        <label for="gen_q3_3">I mostly ignore the label and focus on behavior</label>
+                    </div>
+                    <div class="radio-item">
+                        <input type="radio" id="gen_q3_4" name="gen_q3" value="Not sure">
+                        <label for="gen_q3_4">Not sure</label>
+                    </div>
+                </div>
+            </div>
+
+            <div class="question-block">
+                <h3>Q4. How much do films influence your understanding of mental health conditions?<span class="required-indicator">*</span></h3>
+                <div class="scale-container">
+                    <div class="scale-option">
+                        <input type="radio" name="gen_q4" id="gen_q4_1" value="1">
+                        <label for="gen_q4_1">1</label>
+                    </div>
+                    <div class="scale-option">
+                        <input type="radio" name="gen_q4" id="gen_q4_2" value="2">
+                        <label for="gen_q4_2">2</label>
+                    </div>
+                    <div class="scale-option">
+                        <input type="radio" name="gen_q4" id="gen_q4_3" value="3">
+                        <label for="gen_q4_3">3</label>
+                    </div>
+                    <div class="scale-option">
+                        <input type="radio" name="gen_q4" id="gen_q4_4" value="4">
+                        <label for="gen_q4_4">4</label>
+                    </div>
+                    <div class="scale-option">
+                        <input type="radio" name="gen_q4" id="gen_q4_5" value="5">
+                        <label for="gen_q4_5">5</label>
+                    </div>
+                    <div class="scale-option">
+                        <input type="radio" name="gen_q4" id="gen_q4_6" value="6">
+                        <label for="gen_q4_6">6</label>
+                    </div>
+                    <div class="scale-option">
+                        <input type="radio" name="gen_q4" id="gen_q4_7" value="7">
+                        <label for="gen_q4_7">7</label>
+                    </div>
+                </div>
+                <div class="scale-labels">
+                    <span>Not at all</span>
+                    <span>Very much</span>
+                </div>
+            </div>
+
+            <div class="question-block">
+                <h3>Q5. Do you think films usually simplify or stereotype mental health conditions?<span class="required-indicator">*</span></h3>
+                <div class="radio-group">
+                    <div class="radio-item">
+                        <input type="radio" id="gen_q5_1" name="gen_q5" value="Yes, almost always">
+                        <label for="gen_q5_1">Yes, almost always</label>
+                    </div>
+                    <div class="radio-item">
+                        <input type="radio" id="gen_q5_2" name="gen_q5" value="Sometimes">
+                        <label for="gen_q5_2">Sometimes</label>
+                    </div>
+                    <div class="radio-item">
+                        <input type="radio" id="gen_q5_3" name="gen_q5" value="Rarely">
+                        <label for="gen_q5_3">Rarely</label>
+                    </div>
+                    <div class="radio-item">
+                        <input type="radio" id="gen_q5_4" name="gen_q5" value="Not sure">
+                        <label for="gen_q5_4">Not sure</label>
+                    </div>
+                </div>
+            </div>
+
+            <div class="question-block">
+                <h3>Q6. After watching a film that mentions a mental health condition, do you feel like you understand the condition better?<span class="required-indicator">*</span></h3>
+                <div class="radio-group">
+                    <div class="radio-item">
+                        <input type="radio" id="gen_q6_1" name="gen_q6" value="Yes, usually">
+                        <label for="gen_q6_1">Yes, usually</label>
+                    </div>
+                    <div class="radio-item">
+                        <input type="radio" id="gen_q6_2" name="gen_q6" value="Sometimes">
+                        <label for="gen_q6_2">Sometimes</label>
+                    </div>
+                    <div class="radio-item">
+                        <input type="radio" id="gen_q6_3" name="gen_q6" value="Rarely">
+                        <label for="gen_q6_3">Rarely</label>
+                    </div>
+                    <div class="radio-item">
+                        <input type="radio" id="gen_q6_4" name="gen_q6" value="Not sure">
+                        <label for="gen_q6_4">Not sure</label>
+                    </div>
+                </div>
+            </div>
+
+            <div id="generalQuestionError" class="error"></div>
+            
+            <div id="loadingSpinner" class="loading-spinner">
+                <div class="spinner"></div>
+                <p>Submitting your responses...</p>
+            </div>
+            
+            <div class="btn-group">
+                <button class="btn btn-secondary" onclick="goToPreviousPage()">Previous</button>
+                <button class="btn" onclick="submitSurvey()">Submit</button>
+            </div>
+        </div>
+        
+        <!-- Page 3: Thank You -->
+        <div id="page3" class="page">
+            <h1>🎉 Thank You!</h1>
+            <p class="intro">
+                Your responses have been submitted successfully. Thank you for participating in this survey 
+                about mental health portrayals in cinema. Your insights are valuable in understanding how 
+                films shape our perceptions of mental health conditions.
+            </p>
+            <p class="intro">
+                You may now close this window.
+            </p>
+        </div>
+    </div>
+
+    <script>
+        // Configuration
+        const APPS_SCRIPT_URL = 'https://script.google.com/macros/s/AKfycbxjX0VT3qLrAFm0pNhAMKhVEbHcB7E4oEdvQBJ1N9uF81xtTOqMBXUmFe9u-j0HzZPc/exec';
+        
+        let selectedMovies = [];
+        let selectedDisorders = [];
+        let currentQuestionnaireIndex = 0;
+        
+        // Movie to disorder mapping
+        const movieDisorderMap = {
+            'Annie Hall (1977)': 'anxiety_annie',
+            'As Good as It Gets (1997)': 'ocd_as_good',
+            'Black Swan (2010)': 'anorexia',
+            'Donnie Darko (2001)': 'schizophrenia_donnie',
+            'Eighth Grade (2018)': 'anxiety_eighth',
+            'Identity (2003)': 'did_identity',
+            'Matchstick Men (2003)': 'ocd_matchstick',
+            'Psycho (1960)': 'did_psycho',
+            'Punch-Drunk Love (2002)': 'anxiety_punch',
+            'The Fisher King (1991)': 'schizophrenia_fisher',
+            'What About Bob? (1991)': 'ocd_bob'
+        };
+        
+        // Questionnaire data
+        const questionnaires = {
+            anxiety_annie: {
+                scenario: '"The country makes me nervous." The character rubs his hands together nervously. He says his stomach felt queasy all morning. He avoids going on stage after another comedian.',
+                questions: [
+                    {
+                        id: 'q1',
+                        question: 'Based only on the scenario above, how representative does this portrayal feel of anxiety disorder?',
+                        type: 'scale',
+                        optional: true
+                    },
+                    {
+                        id: 'q2',
+                        question: 'Which of the following do you think are shown or suggested in the scenario?',
+                        subtitle: '(You may select more than one)',
+                        type: 'checkbox',
+                        options: [
+                            'Physical symptoms (e.g., rapid heartbeat, sweating)',
+                            'Behavioral symptoms (e.g., avoidance, restlessness)',
+                            'Cognitive symptoms (e.g., excessive worry, fear)',
+                            'Emotional symptoms (e.g., feeling overwhelmed, panic)',
+                            'None of the above',
+                            'I don\'t know / I\'m not sure'
+                        ]
+                    },
+                    {
+                        id: 'q3',
+                        question: 'Which symptoms do you think are NOT shown but are part of anxiety disorder?',
+                        subtitle: '(You may select more than one)',
+                        type: 'checkbox',
+                        options: [
+                            'Physical symptoms (e.g., rapid heartbeat, sweating)',
+                            'Behavioral symptoms (e.g., avoidance, restlessness)',
+                            'Cognitive symptoms (e.g., excessive worry, fear)',
+                            'Emotional symptoms (e.g., feeling overwhelmed, panic)',
+                            'None of the above',
+                            'I don\'t know / I\'m not sure'
+                        ]
+                    },
+                    {
+                        id: 'q4',
+                        question: 'How clearly does the scenario communicate what anxiety disorder is like for this character?',
+                        type: 'scale',
+},
+                    {
+                        id: 'q5',
+                        question: 'The scenario provided enough information for me to understand anxiety disorder.',
+                        type: 'scale'
+                    }
+                ]
+            },
+            ocd_as_good: {
+                scenario: '"I have obsessive compulsive disorder." The character avoids stepping on cracks in the sidewalk. He uses plastic utensils and throws them away after one use.',
+                questions: [
+                    {
+                        id: 'q1',
+                        question: 'Based only on the scenario above, how representative does this portrayal feel of obsessive compulsive disorder?',
+                        type: 'scale',
+                        optional: true
+                    },
+                    {
+                        id: 'q2',
+                        question: 'Which of the following do you think are shown or suggested in the scenario?',
+                        subtitle: '(You may select more than one)',
+                        type: 'checkbox',
+                        options: [
+                            'Physical symptoms (e.g., rapid heartbeat, sweating)',
+                            'Behavioral symptoms (e.g., avoidance, restlessness)',
+                            'Cognitive symptoms (e.g., excessive worry, fear)',
+                            'Emotional symptoms (e.g., feeling overwhelmed, panic)',
+                            'None of the above',
+                            'I don\'t know / I\'m not sure'
+                        ]
+                    },
+                    {
+                        id: 'q3',
+                        question: 'Which symptoms do you think are NOT shown but are part of obsessive compulsive disorder?',
+                        subtitle: '(You may select more than one)',
+                        type: 'checkbox',
+                        options: [
+                            'Physical symptoms (e.g., rapid heartbeat, sweating)',
+                            'Behavioral symptoms (e.g., avoidance, restlessness)',
+                            'Cognitive symptoms (e.g., excessive worry, fear)',
+                            'Emotional symptoms (e.g., feeling overwhelmed, panic)',
+                            'None of the above',
+                            'I don\'t know / I\'m not sure'
+                        ]
+                    },
+                    {
+                        id: 'q4',
+                        question: 'How clearly does the scenario communicate what obsessive compulsive disorder is like for this character?',
+                        type: 'scale',
+},
+                    {
+                        id: 'q5',
+                        question: 'The scenario provided enough information for me to understand obsessive compulsive disorder.',
+                        type: 'scale'
+                    }
+                ]
+            },
+            anorexia: {
+                scenario: '"I just want to be perfect." The character refuses to eat the cake her mother offers. She stares critically at her own body in the mirror. She pushes herself physically despite visible exhaustion.',
+                questions: [
+                    {
+                        id: 'q1',
+                        question: 'Based only on the scenario above, how representative does this portrayal feel of anorexia nervosa?',
+                        type: 'scale',
+                        optional: true
+                    },
+                    {
+                        id: 'q2',
+                        question: 'Which of the following do you think are shown or suggested in the scenario?',
+                        subtitle: '(You may select more than one)',
+                        type: 'checkbox',
+                        options: [
+                            'Physical symptoms (e.g., rapid heartbeat, sweating)',
+                            'Behavioral symptoms (e.g., avoidance, restlessness)',
+                            'Cognitive symptoms (e.g., excessive worry, fear)',
+                            'Emotional symptoms (e.g., feeling overwhelmed, panic)',
+                            'None of the above',
+                            'I don\'t know / I\'m not sure'
+                        ]
+                    },
+                    {
+                        id: 'q3',
+                        question: 'Which symptoms do you think are NOT shown but are part of anorexia nervosa?',
+                        subtitle: '(You may select more than one)',
+                        type: 'checkbox',
+                        options: [
+                            'Physical symptoms (e.g., rapid heartbeat, sweating)',
+                            'Behavioral symptoms (e.g., avoidance, restlessness)',
+                            'Cognitive symptoms (e.g., excessive worry, fear)',
+                            'Emotional symptoms (e.g., feeling overwhelmed, panic)',
+                            'None of the above',
+                            'I don\'t know / I\'m not sure'
+                        ]
+                    },
+                    {
+                        id: 'q4',
+                        question: 'How clearly does the scenario communicate what anorexia nervosa is like for this character?',
+                        type: 'scale',
+},
+                    {
+                        id: 'q5',
+                        question: 'The scenario provided enough information for me to understand anorexia nervosa.',
+                        type: 'scale'
+                    }
+                ]
+            },
+            schizophrenia_donnie: {
+                scenario: '"I was seeing things that weren\'t really there." The character has conversations with a figure no one else can see. He appears confused about what is real and what is imagined. He follows instructions given by the figure.',
+                questions: [
+                    {
+                        id: 'q1',
+                        question: 'Based only on the scenario above, how representative does this portrayal feel of schizophrenia / psychosis?',
+                        type: 'scale',
+                        optional: true
+                    },
+                    {
+                        id: 'q2',
+                        question: 'Which of the following do you think are shown or suggested in the scenario?',
+                        subtitle: '(You may select more than one)',
+                        type: 'checkbox',
+                        options: [
+                            'Physical symptoms (e.g., rapid heartbeat, sweating)',
+                            'Behavioral symptoms (e.g., avoidance, restlessness)',
+                            'Cognitive symptoms (e.g., excessive worry, fear)',
+                            'Emotional symptoms (e.g., feeling overwhelmed, panic)',
+                            'None of the above',
+                            'I don\'t know / I\'m not sure'
+                        ]
+                    },
+                    {
+                        id: 'q3',
+                        question: 'Which symptoms do you think are NOT shown but are part of schizophrenia / psychosis?',
+                        subtitle: '(You may select more than one)',
+                        type: 'checkbox',
+                        options: [
+                            'Physical symptoms (e.g., rapid heartbeat, sweating)',
+                            'Behavioral symptoms (e.g., avoidance, restlessness)',
+                            'Cognitive symptoms (e.g., excessive worry, fear)',
+                            'Emotional symptoms (e.g., feeling overwhelmed, panic)',
+                            'None of the above',
+                            'I don\'t know / I\'m not sure'
+                        ]
+                    },
+                    {
+                        id: 'q4',
+                        question: 'How clearly does the scenario communicate what schizophrenia / psychosis is like for this character?',
+                        type: 'scale',
+},
+                    {
+                        id: 'q5',
+                        question: 'The scenario provided enough information for me to understand schizophrenia / psychosis.',
+                        type: 'scale'
+                    }
+                ]
+            },
+            anxiety_eighth: {
+                scenario: '"I\'m not good at being a person." The character practices conversations in the mirror before social situations. She freezes during a class presentation and struggles to speak.',
+                questions: [
+                    {
+                        id: 'q1',
+                        question: 'Based only on the scenario above, how representative does this portrayal feel of anxiety disorder?',
+                        type: 'scale',
+                        optional: true
+                    },
+                    {
+                        id: 'q2',
+                        question: 'Which of the following do you think are shown or suggested in the scenario?',
+                        subtitle: '(You may select more than one)',
+                        type: 'checkbox',
+                        options: [
+                            'Physical symptoms (e.g., rapid heartbeat, sweating)',
+                            'Behavioral symptoms (e.g., avoidance, restlessness)',
+                            'Cognitive symptoms (e.g., excessive worry, fear)',
+                            'Emotional symptoms (e.g., feeling overwhelmed, panic)',
+                            'None of the above',
+                            'I don\'t know / I\'m not sure'
+                        ]
+                    },
+                    {
+                        id: 'q3',
+                        question: 'Which symptoms do you think are NOT shown but are part of anxiety disorder?',
+                        subtitle: '(You may select more than one)',
+                        type: 'checkbox',
+                        options: [
+                            'Physical symptoms (e.g., rapid heartbeat, sweating)',
+                            'Behavioral symptoms (e.g., avoidance, restlessness)',
+                            'Cognitive symptoms (e.g., excessive worry, fear)',
+                            'Emotional symptoms (e.g., feeling overwhelmed, panic)',
+                            'None of the above',
+                            'I don\'t know / I\'m not sure'
+                        ]
+                    },
+                    {
+                        id: 'q4',
+                        question: 'How clearly does the scenario communicate what anxiety disorder is like for this character?',
+                        type: 'scale',
+},
+                    {
+                        id: 'q5',
+                        question: 'The scenario provided enough information for me to understand anxiety disorder.',
+                        type: 'scale'
+                    }
+                ]
+            },
+            did_identity: {
+                scenario: '"I don\'t know who I am anymore." The character\'s identity shifts unexpectedly. Others comment that they seem like a different person at different times.',
+                questions: [
+                    {
+                        id: 'q1',
+                        question: 'Based only on the scenario above, how representative does this portrayal feel of dissociative identity disorder?',
+                        type: 'scale',
+                        optional: true
+                    },
+                    {
+                        id: 'q2',
+                        question: 'Which of the following do you think are shown or suggested in the scenario?',
+                        subtitle: '(You may select more than one)',
+                        type: 'checkbox',
+                        options: [
+                            'Physical symptoms (e.g., rapid heartbeat, sweating)',
+                            'Behavioral symptoms (e.g., avoidance, restlessness)',
+                            'Cognitive symptoms (e.g., excessive worry, fear)',
+                            'Emotional symptoms (e.g., feeling overwhelmed, panic)',
+                            'None of the above',
+                            'I don\'t know / I\'m not sure'
+                        ]
+                    },
+                    {
+                        id: 'q3',
+                        question: 'Which symptoms do you think are NOT shown but are part of dissociative identity disorder?',
+                        subtitle: '(You may select more than one)',
+                        type: 'checkbox',
+                        options: [
+                            'Physical symptoms (e.g., rapid heartbeat, sweating)',
+                            'Behavioral symptoms (e.g., avoidance, restlessness)',
+                            'Cognitive symptoms (e.g., excessive worry, fear)',
+                            'Emotional symptoms (e.g., feeling overwhelmed, panic)',
+                            'None of the above',
+                            'I don\'t know / I\'m not sure'
+                        ]
+                    },
+                    {
+                        id: 'q4',
+                        question: 'How clearly does the scenario communicate what dissociative identity disorder is like for this character?',
+                        type: 'scale',
+},
+                    {
+                        id: 'q5',
+                        question: 'The scenario provided enough information for me to understand dissociative identity disorder.',
+                        type: 'scale'
+                    }
+                ]
+            },
+            ocd_matchstick: {
+                scenario: '"Don\'t touch the doorknob!" The character performs repeated rituals, counting and organizing constantly. He becomes distressed when his routines are interrupted.',
+                questions: [
+                    {
+                        id: 'q1',
+                        question: 'Based only on the scenario above, how representative does this portrayal feel of obsessive compulsive disorder?',
+                        type: 'scale',
+                        optional: true
+                    },
+                    {
+                        id: 'q2',
+                        question: 'Which of the following do you think are shown or suggested in the scenario?',
+                        subtitle: '(You may select more than one)',
+                        type: 'checkbox',
+                        options: [
+                            'Physical symptoms (e.g., rapid heartbeat, sweating)',
+                            'Behavioral symptoms (e.g., avoidance, restlessness)',
+                            'Cognitive symptoms (e.g., excessive worry, fear)',
+                            'Emotional symptoms (e.g., feeling overwhelmed, panic)',
+                            'None of the above',
+                            'I don\'t know / I\'m not sure'
+                        ]
+                    },
+                    {
+                        id: 'q3',
+                        question: 'Which symptoms do you think are NOT shown but are part of obsessive compulsive disorder?',
+                        subtitle: '(You may select more than one)',
+                        type: 'checkbox',
+                        options: [
+                            'Physical symptoms (e.g., rapid heartbeat, sweating)',
+                            'Behavioral symptoms (e.g., avoidance, restlessness)',
+                            'Cognitive symptoms (e.g., excessive worry, fear)',
+                            'Emotional symptoms (e.g., feeling overwhelmed, panic)',
+                            'None of the above',
+                            'I don\'t know / I\'m not sure'
+                        ]
+                    },
+                    {
+                        id: 'q4',
+                        question: 'How clearly does the scenario communicate what obsessive compulsive disorder is like for this character?',
+                        type: 'scale',
+},
+                    {
+                        id: 'q5',
+                        question: 'The scenario provided enough information for me to understand obsessive compulsive disorder.',
+                        type: 'scale'
+                    }
+                ]
+            },
+            did_psycho: {
+                scenario: '"He was never quite himself." The character speaks as if another person is present. His behavior shifts in ways that suggest another identity.',
+                questions: [
+                    {
+                        id: 'q1',
+                        question: 'Based only on the scenario above, how representative does this portrayal feel of dissociative identity disorder?',
+                        type: 'scale',
+                        optional: true
+                    },
+                    {
+                        id: 'q2',
+                        question: 'Which of the following do you think are shown or suggested in the scenario?',
+                        subtitle: '(You may select more than one)',
+                        type: 'checkbox',
+                        options: [
+                            'Physical symptoms (e.g., rapid heartbeat, sweating)',
+                            'Behavioral symptoms (e.g., avoidance, restlessness)',
+                            'Cognitive symptoms (e.g., excessive worry, fear)',
+                            'Emotional symptoms (e.g., feeling overwhelmed, panic)',
+                            'None of the above',
+                            'I don\'t know / I\'m not sure'
+                        ]
+                    },
+                    {
+                        id: 'q3',
+                        question: 'Which symptoms do you think are NOT shown but are part of dissociative identity disorder?',
+                        subtitle: '(You may select more than one)',
+                        type: 'checkbox',
+                        options: [
+                            'Physical symptoms (e.g., rapid heartbeat, sweating)',
+                            'Behavioral symptoms (e.g., avoidance, restlessness)',
+                            'Cognitive symptoms (e.g., excessive worry, fear)',
+                            'Emotional symptoms (e.g., feeling overwhelmed, panic)',
+                            'None of the above',
+                            'I don\'t know / I\'m not sure'
+                        ]
+                    },
+                    {
+                        id: 'q4',
+                        question: 'How clearly does the scenario communicate what dissociative identity disorder is like for this character?',
+                        type: 'scale',
+},
+                    {
+                        id: 'q5',
+                        question: 'The scenario provided enough information for me to understand dissociative identity disorder.',
+                        type: 'scale'
+                    }
+                ]
+            },
+            anxiety_punch: {
+                scenario: '"I have a lot of anger and anxiety." The character becomes visibly distressed in social interactions. He reacts intensely to minor provocations.',
+                questions: [
+                    {
+                        id: 'q1',
+                        question: 'Based only on the scenario above, how representative does this portrayal feel of anxiety?',
+                        type: 'scale',
+                        optional: true
+                    },
+                    {
+                        id: 'q2',
+                        question: 'Which of the following do you think are shown or suggested in the scenario?',
+                        subtitle: '(You may select more than one)',
+                        type: 'checkbox',
+                        options: [
+                            'Physical symptoms (e.g., rapid heartbeat, sweating)',
+                            'Behavioral symptoms (e.g., avoidance, restlessness)',
+                            'Cognitive symptoms (e.g., excessive worry, fear)',
+                            'Emotional symptoms (e.g., feeling overwhelmed, panic)',
+                            'None of the above',
+                            'I don\'t know / I\'m not sure'
+                        ]
+                    },
+                    {
+                        id: 'q3',
+                        question: 'Which symptoms do you think are NOT shown but are part of anxiety?',
+                        subtitle: '(You may select more than one)',
+                        type: 'checkbox',
+                        options: [
+                            'Physical symptoms (e.g., rapid heartbeat, sweating)',
+                            'Behavioral symptoms (e.g., avoidance, restlessness)',
+                            'Cognitive symptoms (e.g., excessive worry, fear)',
+                            'Emotional symptoms (e.g., feeling overwhelmed, panic)',
+                            'None of the above',
+                            'I don\'t know / I\'m not sure'
+                        ]
+                    },
+                    {
+                        id: 'q4',
+                        question: 'How clearly does the scenario communicate what anxiety is like for this character?',
+                        type: 'scale',
+},
+                    {
+                        id: 'q5',
+                        question: 'The scenario provided enough information for me to understand anxiety.',
+                        type: 'scale'
+                    }
+                ]
+            },
+            schizophrenia_fisher: {
+                scenario: '"I see things other people don\'t." The character believes he is on a grand, delusional quest. He reacts emotionally to imagined threats.',
+                questions: [
+                    {
+                        id: 'q1',
+                        question: 'Based only on the scenario above, how representative does this portrayal feel of schizophrenia / psychosis?',
+                        type: 'scale',
+                        optional: true
+                    },
+                    {
+                        id: 'q2',
+                        question: 'Which of the following do you think are shown or suggested in the scenario?',
+                        subtitle: '(You may select more than one)',
+                        type: 'checkbox',
+                        options: [
+                            'Physical symptoms (e.g., rapid heartbeat, sweating)',
+                            'Behavioral symptoms (e.g., avoidance, restlessness)',
+                            'Cognitive symptoms (e.g., excessive worry, fear)',
+                            'Emotional symptoms (e.g., feeling overwhelmed, panic)',
+                            'None of the above',
+                            'I don\'t know / I\'m not sure'
+                        ]
+                    },
+                    {
+                        id: 'q3',
+                        question: 'Which symptoms do you think are NOT shown but are part of schizophrenia / psychosis?',
+                        subtitle: '(You may select more than one)',
+                        type: 'checkbox',
+                        options: [
+                            'Physical symptoms (e.g., rapid heartbeat, sweating)',
+                            'Behavioral symptoms (e.g., avoidance, restlessness)',
+                            'Cognitive symptoms (e.g., excessive worry, fear)',
+                            'Emotional symptoms (e.g., feeling overwhelmed, panic)',
+                            'None of the above',
+                            'I don\'t know / I\'m not sure'
+                        ]
+                    },
+                    {
+                        id: 'q4',
+                        question: 'How clearly does the scenario communicate what schizophrenia / psychosis is like for this character?',
+                        type: 'scale',
+},
+                    {
+                        id: 'q5',
+                        question: 'The scenario provided enough information for me to understand schizophrenia / psychosis.',
+                        type: 'scale'
+                    }
+                ]
+            },
+            ocd_bob: {
+                scenario: '"I\'m a compulsive personality." The character repeatedly seeks reassurance from others. He follows rigid routines to manage his anxiety.',
+                questions: [
+                    {
+                        id: 'q1',
+                        question: 'Based only on the scenario above, how representative does this portrayal feel of obsessive compulsive disorder?',
+                        type: 'scale',
+                        optional: true
+                    },
+                    {
+                        id: 'q2',
+                        question: 'Which of the following do you think are shown or suggested in the scenario?',
+                        subtitle: '(You may select more than one)',
+                        type: 'checkbox',
+                        options: [
+                            'Physical symptoms (e.g., rapid heartbeat, sweating)',
+                            'Behavioral symptoms (e.g., avoidance, restlessness)',
+                            'Cognitive symptoms (e.g., excessive worry, fear)',
+                            'Emotional symptoms (e.g., feeling overwhelmed, panic)',
+                            'None of the above',
+                            'I don\'t know / I\'m not sure'
+                        ]
+                    },
+                    {
+                        id: 'q3',
+                        question: 'Which symptoms do you think are NOT shown but are part of obsessive compulsive disorder?',
+                        subtitle: '(You may select more than one)',
+                        type: 'checkbox',
+                        options: [
+                            'Physical symptoms (e.g., rapid heartbeat, sweating)',
+                            'Behavioral symptoms (e.g., avoidance, restlessness)',
+                            'Cognitive symptoms (e.g., excessive worry, fear)',
+                            'Emotional symptoms (e.g., feeling overwhelmed, panic)',
+                            'None of the above',
+                            'I don\'t know / I\'m not sure'
+                        ]
+                    },
+                    {
+                        id: 'q4',
+                        question: 'How clearly does the scenario communicate what obsessive compulsive disorder is like for this character?',
+                        type: 'scale',
+},
+                    {
+                        id: 'q5',
+                        question: 'The scenario provided enough information for me to understand obsessive compulsive disorder.',
+                        type: 'scale'
+                    }
+                ]
+            }
+        };
+        
+        function init() {
+            updateProgress(0);
+            
+            // Setup "None of these" checkbox behavior
+            const noneCheckbox = document.getElementById('none_of_these');
+            const allCheckboxes = document.querySelectorAll('.movie-item input[type="checkbox"]:not(#none_of_these)');
+            
+            noneCheckbox.addEventListener('change', function() {
+                if (this.checked) {
+                    allCheckboxes.forEach(cb => {
+                        cb.checked = false;
+                        cb.disabled = true;
+                        cb.parentElement.style.opacity = '0.5';
+                    });
+                } else {
+                    allCheckboxes.forEach(cb => {
+                        cb.disabled = false;
+                        cb.parentElement.style.opacity = '1';
+                    });
+                }
+            });
+            
+            allCheckboxes.forEach(cb => {
+                cb.addEventListener('change', function() {
+                    if (this.checked) {
+                        noneCheckbox.checked = false;
+                    }
+                });
+            });
+        }
+        
+        function proceedToQuestionnaires() {
+            const checkboxes = document.querySelectorAll('.movie-item input[type="checkbox"]:checked');
+            selectedMovies = Array.from(checkboxes).map(cb => cb.value);
+            
+            if (selectedMovies.length === 0) {
+                const errorDiv = document.getElementById('movieError');
+                errorDiv.textContent = 'Please select at least one movie or "None of these".';
+                errorDiv.classList.add('show');
+                return;
+            }
+            
+            document.getElementById('movieError').classList.remove('show');
+            
+            // Map selected movies to disorders
+            selectedDisorders = selectedMovies
+                .filter(movie => movie !== 'None of these')
+                .map(movie => movieDisorderMap[movie])
+                .filter(disorder => disorder);
+            
+            if (selectedDisorders.length > 0) {
+                generateQuestionnairePages();
+                currentQuestionnaireIndex = 0;
+                showQuestionnairePage(0);
+                updateProgress(25);
+            } else {
+                showPage('generalQuestionnairePage');
+                updateProgress(75);
+            }
+        }
+        
+        function generateQuestionnairePages() {
+            const container = document.getElementById('dynamicQuestionnaires');
+            container.innerHTML = '';
+            
+            selectedDisorders.forEach((disorder, index) => {
+                const pageDiv = document.createElement('div');
+                pageDiv.id = `questionnaire_${index}`;
+                pageDiv.className = 'questionnaire-page';
+                
+                const questionnaire = questionnaires[disorder];
+                const prefix = `d${index + 1}_`;
+                
+                let html = `
+                    <div style="margin-bottom: 30px;">
+                        <h2 style="color: #667eea; margin-bottom: 20px;">${selectedDisorders.length > 1 ? 'Questionnaire ' + (index + 1) : 'Questionnaire'}</h2>
+
+                        <div class="instructions-box">
+                            <strong>Instructions</strong>
+                            <ul>
+                                <li>Please read the scenario carefully and answer based <strong>only</strong> on what is shown in the scenario.</li>
+                                <li>If you are unsure, select <em>"I don't know / I'm not sure"</em> where available.</li>
+                                <li>There are no right or wrong answers — we are interested in your perception.</li>
+                            </ul>
+                        </div>
+
+                        <div class="scenario-box">
+                            <div class="scenario-title">Scenario</div>
+                            <div class="scenario-text"><strong>${questionnaire.scenario}</strong></div>
+                        </div>
+
+                        <p class="required-label"><span style="color: #dc3545;">*</span> indicates required question</p>
+                    </div>
+                `;
+                
+                questionnaire.questions.forEach((q, qIndex) => {
+                    const questionId = prefix + q.id;
+                    html += `<div class="question-block">`;
+                    html += `<h3>Q${qIndex + 1}. ${q.question}${!q.optional ? '<span class="required-indicator">*</span>' : ''}</h3>`;
+                    if (q.subtitle) {
+                        html += `<p style="color: #6c757d; margin-bottom: 15px;">${q.subtitle}</p>`;
+                    }
+                    
+                    if (q.type === 'scale') {
+                        html += `<div class="scale-container">`;
+                        for (let i = 1; i <= 7; i++) {
+                            html += `
+                                <div class="scale-option">
+                                    <input type="radio" name="${questionId}" id="${questionId}_${i}" value="${i}">
+                                    <label for="${questionId}_${i}">${i}</label>
+                                </div>
+                            `;
+                        }
+                        html += `</div>`;
+                        html += `
+                            <div class="scale-labels">
+                                <span>Not representative at all</span>
+                                <span>Highly representative</span>
+                            </div>
+                        `;
+                    } else if (q.type === 'checkbox') {
+                        html += `<div class="checkbox-group">`;
+                        q.options.forEach((opt, i) => {
+                            html += `
+                                <div class="checkbox-item">
+                                    <input type="checkbox" id="${questionId}_${i}" name="${questionId}" value="${opt}">
+                                    <label for="${questionId}_${i}">${opt}</label>
+                                </div>
+                            `;
+                        });
+                        html += `</div>`;
+                    }
+                    
+                    html += `</div>`;
+                });
+                
+                html += `<div id="error_${index}" class="error"></div>`;
+                
+                html += `
+                    <div class="btn-group">
+                        ${index > 0 ? `<button class="btn btn-secondary" onclick="goToPreviousQuestionnaire()">Previous</button>` : `<button class="btn btn-secondary" onclick="goBackToMovieSelection()">Previous</button>`}
+                        ${index < selectedDisorders.length - 1 
+                            ? `<button class="btn" onclick="validateAndProceed(${index})">Next</button>`
+                            : `<button class="btn" onclick="validateAndProceed(${index})">Next</button>`
+                        }
+                    </div>
+                `;
+                
+                pageDiv.innerHTML = html;
+                container.appendChild(pageDiv);
+            });
+        }
+        
+        function showQuestionnairePage(index) {
+            document.querySelectorAll('.page, .questionnaire-page').forEach(page => {
+                page.classList.remove('active');
+            });
+            
+            const pageId = `questionnaire_${index}`;
+            document.getElementById(pageId).classList.add('active');
+            currentQuestionnaireIndex = index;
+        }
+        
+        function validateAndProceed(index) {
+            const questionnaire = questionnaires[selectedDisorders[index]];
+            const prefix = `d${index + 1}_`;
+            
+            // Validate all required questions
+            for (let q of questionnaire.questions) {
+                // Skip validation if question is optional
+                if (q.optional) continue;
+                
+                const questionId = prefix + q.id;
+                
+                if (q.type === 'scale' || q.type === 'radio') {
+                    const selected = document.querySelector(`input[name="${questionId}"]:checked`);
+                    if (!selected) {
+                        const errorDiv = document.getElementById(`error_${index}`);
+                        errorDiv.textContent = 'Please answer all required questions.';
+                        errorDiv.classList.add('show');
+                        return;
+                    }
+                }
+                // Checkbox questions are optional, no validation needed
+            }
+            
+            document.getElementById(`error_${index}`).classList.remove('show');
+            
+            if (index < selectedDisorders.length - 1) {
+                showQuestionnairePage(index + 1);
+                updateProgress(25 + (50 * (index + 1) / selectedDisorders.length));
+            } else {
+                showPage('generalQuestionnairePage');
+                updateProgress(75);
+            }
+        }
+        
+        function goToPreviousQuestionnaire() {
+            if (currentQuestionnaireIndex > 0) {
+                showQuestionnairePage(currentQuestionnaireIndex - 1);
+                updateProgress(25 + (50 * currentQuestionnaireIndex / selectedDisorders.length));
+            }
+        }
+        
+        function goBackToMovieSelection() {
+            showPage('page1');
+            updateProgress(0);
+        }
+        
+        function goToPreviousPage() {
+            if (selectedDisorders.length > 0) {
+                showQuestionnairePage(selectedDisorders.length - 1);
+                updateProgress(25 + (50 * selectedDisorders.length / selectedDisorders.length));
+            } else {
+                showPage('page1');
+                updateProgress(0);
+            }
+        }
+        
+        function collectResponses() {
+            const responses = {};
+            
+            // Collect disorder questionnaire responses
+            selectedDisorders.forEach((disorder, disorderIndex) => {
+                const questionnaire = questionnaires[disorder];
+                const prefix = `d${disorderIndex + 1}_`;
+                const disorderKey = `${disorder}_${disorderIndex + 1}`;
+                
+                responses[disorderKey] = {};
+                
+                questionnaire.questions.forEach(q => {
+                    const questionId = prefix + q.id;
+                    if (q.type === 'scale' || q.type === 'radio') {
+                        const selected = document.querySelector(`input[name="${questionId}"]:checked`);
+                        responses[disorderKey][q.id] = selected ? selected.value : '';
+                    } else if (q.type === 'checkbox') {
+                        const checked = Array.from(document.querySelectorAll(`input[name="${questionId}"]:checked`))
+                            .map(cb => cb.value);
+                        responses[disorderKey][q.id] = checked.join('; ');
+                    }
+                });
+            });
+            
+            // Collect general questionnaire responses
+            responses['general'] = {};
+            for (let i = 1; i <= 6; i++) {
+                const questionName = `gen_q${i}`;
+                if (i === 1 || i === 2) {
+                    // Checkbox questions (Q1 and Q2)
+                    const checked = Array.from(document.querySelectorAll(`input[name="${questionName}"]:checked`))
+                        .map(cb => cb.value);
+                    responses['general'][questionName] = checked.join('; ');
+                } else {
+                    // Radio or scale questions
+                    const selected = document.querySelector(`input[name="${questionName}"]:checked`);
+                    responses['general'][questionName] = selected ? selected.value : '';
+                }
+            }
+            
+            return responses;
+        }
+        
+        function validateGeneralQuestionnaire() {
+            // Validate general questionnaire (Q1 and Q2 are checkboxes and optional, others required)
+            for (let i = 1; i <= 6; i++) {
+                if (i === 1 || i === 2) continue; // Q1 and Q2 are checkboxes, optional
+                const questionName = `gen_q${i}`;
+                const selected = document.querySelector(`input[name="${questionName}"]:checked`);
+                if (!selected) {
+                    return false;
+                }
+            }
+            return true;
+        }
+        
+        async function submitSurvey() {
+            if (!validateGeneralQuestionnaire()) {
+                const errorDiv = document.getElementById('generalQuestionError');
+                errorDiv.textContent = 'Please answer all required questions.';
+                errorDiv.classList.add('show');
+                return;
+            }
+            
+            document.getElementById('generalQuestionError').classList.remove('show');
+            document.getElementById('loadingSpinner').classList.add('show');
+            
+            const responses = collectResponses();
+            
+            // Submit data
+            const submissionPromises = [];
+            
+            for (let key in responses) {
+                if (key === 'general') {
+                    const data = {
+                        disorder: 'general',
+                        selectedMovies: selectedMovies.join(', '),
+                        ...responses['general']
+                    };
+                    
+                    submissionPromises.push(
+                        fetch(APPS_SCRIPT_URL, {
+                            method: 'POST',
+                            mode: 'no-cors',
+                            headers: {
+                                'Content-Type': 'application/json',
+                            },
+                            body: JSON.stringify(data)
+                        })
+                    );
+                } else {
+                    const originalDisorder = key.split('_').slice(0, -1).join('_');
+                    
+                    const data = {
+                        disorder: originalDisorder,
+                        selectedMovies: selectedMovies.join(', '),
+                        scenario: questionnaires[originalDisorder].scenario,
+                        ...responses[key]
+                    };
+                    
+                    submissionPromises.push(
+                        fetch(APPS_SCRIPT_URL, {
+                            method: 'POST',
+                            mode: 'no-cors',
+                            headers: {
+                                'Content-Type': 'application/json',
+                            },
+                            body: JSON.stringify(data)
+                        })
+                    );
+                }
+            }
+            
+            try {
+                await Promise.all(submissionPromises);
+                
+                setTimeout(() => {
+                    document.getElementById('loadingSpinner').classList.remove('show');
+                    showPage('page3');
+                    updateProgress(100);
+                }, 1500);
+                
+            } catch (error) {
+                console.error('Error:', error);
+                document.getElementById('loadingSpinner').classList.remove('show');
+                alert('There was an error submitting your responses. Please try again.');
+            }
+        }
+        
+        function showPage(pageId) {
+            document.querySelectorAll('.page, .questionnaire-page').forEach(page => {
+                page.classList.remove('active');
+            });
+            document.getElementById(pageId).classList.add('active');
+        }
+        
+        function updateProgress(percent) {
+            document.getElementById('progressBar').style.width = percent + '%';
+        }
+        
+        window.onload = init;
+    </script>
+</body>
+</html>
