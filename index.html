@@ -1548,7 +1548,19 @@
             return responses;
         }
         
-        function validateGeneralQuestionnaire() {
+
+            // Fallback for browsers that block cross-origin fetch in some contexts
+            function trySendBeacon(payload) {
+                try {
+                    if (!navigator.sendBeacon) return false;
+                    const blob = new Blob([JSON.stringify(payload)], { type: 'text/plain;charset=utf-8' });
+                    return navigator.sendBeacon(APPS_SCRIPT_URL, blob);
+                } catch (e) {
+                    return false;
+                }
+            }
+
+function validateGeneralQuestionnaire() {
             // Validate general questionnaire (Q1 and Q2 are checkboxes and optional, others required)
             for (let i = 1; i <= 6; i++) {
                 if (i === 1 || i === 2) continue; // Q1 and Q2 are checkboxes, optional
@@ -1585,16 +1597,11 @@
                         ...responses['general']
                     };
                     
-                    submissionPromises.push(
-                        fetch(APPS_SCRIPT_URL, {
-                            method: 'POST',
-                            mode: 'no-cors',
-                            headers: {
-                                'Content-Type': 'application/json',
-                            },
-                            body: JSON.stringify(data)
-                        })
-                    );
+                    if (!trySendBeacon(data)) {
+                        submissionPromises.push(
+                            fetch(APPS_SCRIPT_URL, { method: 'POST', mode: 'no-cors', body: JSON.stringify(data) })
+                        );
+                    }
                 } else {
                     const originalDisorder = key.split('_').slice(0, -1).join('_');
                     
@@ -1606,16 +1613,11 @@
                         ...responses[key]
                     };
                     
-                    submissionPromises.push(
-                        fetch(APPS_SCRIPT_URL, {
-                            method: 'POST',
-                            mode: 'no-cors',
-                            headers: {
-                                'Content-Type': 'application/json',
-                            },
-                            body: JSON.stringify(data)
-                        })
-                    );
+                    if (!trySendBeacon(data)) {
+                        submissionPromises.push(
+                            fetch(APPS_SCRIPT_URL, { method: 'POST', mode: 'no-cors', body: JSON.stringify(data) })
+                        );
+                    }
                 }
             }
             
